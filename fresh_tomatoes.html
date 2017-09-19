@@ -1,10 +1,4 @@
-import webbrowser
-import os
-import re
 
-
-# Styles and scripting for the page
-main_page_head = '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,11 +116,7 @@ main_page_head = '''
         });
     </script>
 </head>
-'''
 
-
-# The main page layout and title bar
-main_page_content = '''
   <body>
     <!-- Trailer Video Modal -->
     <div class="modal" id="trailer">
@@ -166,60 +156,52 @@ main_page_content = '''
       </div>
     </div>
     <div class="container">
-      {movie_tiles}
+      
+<div class="col-sm-6 col-md-6 col-lg-4 movie-tile text-center">
+    <h2>Manchester by the Sea</h2>
+    <img src="https://upload.wikimedia.org/wikipedia/en/d/de/Manchester_by_the_Sea.jpg" width="220" height="342">
+    <div class="btns">
+       <button type="button" class="btn storyline-btn" data-storyline-content="After the death of his older brother Joe, Lee Chandler (Casey Affleck) is shocked that Joe has made him sole guardian of his teenage nephew Patrick. Taking leave of his job as a janitor in Boston, Lee reluctantly returns to Manchester-by-the-Sea, the fishing village where his working-class family has lived for generations. There, he is forced to deal with a past that separated him from his wife, Randi (Michelle Williams), and the community where he was born and raised." data-toggle="modal" data-target="#storyline">Storyline</button>
+       <button type="button" class="btn trailer-btn" data-trailer-youtube-id="gsVoD0pTge0" data-toggle="modal" data-target="#trailer">Watch Trailer</button>
+    </div>
+</div>
+
+<div class="col-sm-6 col-md-6 col-lg-4 movie-tile text-center">
+    <h2>Guardians of the Galaxy Vol. 2</h2>
+    <img src="https://upload.wikimedia.org/wikipedia/en/9/95/GotG_Vol2_poster.jpg" width="220" height="342">
+    <div class="btns">
+       <button type="button" class="btn storyline-btn" data-storyline-content="Peter Quill and his fellow Guardians are hired by a powerful alien race, the Sovereign, to protect their precious batteries from invaders. When it is discovered that Rocket has stolen the items they were sent to guard, the Sovereign dispatch their armada to search for vengeance. As the Guardians try to escape, the mystery of Peter's parentage is revealed." data-toggle="modal" data-target="#storyline">Storyline</button>
+       <button type="button" class="btn trailer-btn" data-trailer-youtube-id="2cv2ueYnKjg" data-toggle="modal" data-target="#trailer">Watch Trailer</button>
+    </div>
+</div>
+
+<div class="col-sm-6 col-md-6 col-lg-4 movie-tile text-center">
+    <h2>Kung Fu Hustle</h2>
+    <img src="https://upload.wikimedia.org/wikipedia/en/0/00/KungFuHustleHKposter.jpg" width="220" height="342">
+    <div class="btns">
+       <button type="button" class="btn storyline-btn" data-storyline-content="When the hapless Sing (Stephen Chow) and his dim-witted pal, Bone (Feng Xiaogang), try to scam the residents of Pig Sty Alley into thinking they're members of the dreaded Axe Gang, the real gangsters descend on this Shanghai slum to restore their fearsome reputation. What gang leader Brother Sum (Chan Kwok-kwan) doesn't know is that three legendary retired kung fu masters (Yu Xing, Dong Zhihua, Chiu Chi-ling) live anonymously in this decrepit neighborhood and don't take kindly to interlopers." data-toggle="modal" data-target="#storyline">Storyline</button>
+       <button type="button" class="btn trailer-btn" data-trailer-youtube-id="-m3IB7N_PRk" data-toggle="modal" data-target="#trailer">Watch Trailer</button>
+    </div>
+</div>
+
+<div class="col-sm-6 col-md-6 col-lg-4 movie-tile text-center">
+    <h2>The Wailing</h2>
+    <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/The_Wailing_%28film%29.png" width="220" height="342">
+    <div class="btns">
+       <button type="button" class="btn storyline-btn" data-storyline-content="Suspicion leads to hysteria when rural villagers link a series of brutal murders to the arrival of a mysterious stranger (Kunimura Jun)." data-toggle="modal" data-target="#storyline">Storyline</button>
+       <button type="button" class="btn trailer-btn" data-trailer-youtube-id="43uAputjI4k" data-toggle="modal" data-target="#trailer">Watch Trailer</button>
+    </div>
+</div>
+
+<div class="col-sm-6 col-md-6 col-lg-4 movie-tile text-center">
+    <h2>Get out</h2>
+    <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/Teaser_poster_for_2017_film_Get_Out.png" width="220" height="342">
+    <div class="btns">
+       <button type="button" class="btn storyline-btn" data-storyline-content="Now that Chris (Daniel Kaluuya) and his girlfriend, Rose (Allison Williams), have reached the meet-the-parents milestone of dating, she invites him for a weekend getaway upstate with Missy and Dean. At first, Chris reads the family's overly accommodating behavior as nervous attempts to deal with their daughter's interracial relationship, but as the weekend progresses, a series of increasingly disturbing discoveries lead him to a truth that he never could have imagined." data-toggle="modal" data-target="#storyline">Storyline</button>
+       <button type="button" class="btn trailer-btn" data-trailer-youtube-id="sRfnevzM9kQ" data-toggle="modal" data-target="#trailer">Watch Trailer</button>
+    </div>
+</div>
+
     </div>
   </body>
 </html>
-'''
-
-
-# A single movie entry html template
-movie_tile_content = '''
-<div class="col-sm-6 col-md-6 col-lg-4 movie-tile text-center">
-    <h2>{movie_title}</h2>
-    <img src="{poster_image_url}" width="220" height="342">
-    <div class="btns">
-       <button type="button" class="btn storyline-btn" data-storyline-content="{storyline}" data-toggle="modal" data-target="#storyline">Storyline</button>
-       <button type="button" class="btn trailer-btn" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">Watch Trailer</button>
-    </div>
-</div>
-'''
-
-
-def create_movie_tiles_content(movies):
-    # The HTML content for this section of the page
-    content = ''
-    for movie in movies:
-        # Extract the youtube ID from the url
-        youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', movie.trailer_youtube_url)
-        youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', movie.trailer_youtube_url)
-        trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
-                              else None)
-
-        # Append the tile for the movie with its content filled in
-        content += movie_tile_content.format(
-            movie_title=movie.title,
-            poster_image_url=movie.poster_image_url,
-            storyline=movie.storyline,
-            trailer_youtube_id=trailer_youtube_id
-        )
-    return content
-
-
-def open_movies_page(movies):
-    # Create or overwrite the output file
-    output_file = open('fresh_tomatoes.html', 'w')
-
-    # Replace the movie tiles placeholder generated content
-    rendered_content = main_page_content.format(
-        movie_tiles=create_movie_tiles_content(movies))
-
-    # Output the file
-    output_file.write(main_page_head + rendered_content)
-    output_file.close()
-
-    # open the output file in the browser (in a new tab, if possible)
-    url = os.path.abspath(output_file.name)
-    webbrowser.open('file://' + url, new=2)
